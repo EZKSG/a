@@ -1,0 +1,1665 @@
+#include <iostream>
+
+#include <string>
+
+#include <iomanip>
+
+#include <fstream>
+
+#include <stdlib.h>
+
+#define MAX 100
+
+using namespace std;
+
+class Person
+
+{
+
+public:
+
+
+
+
+
+string num; //编号
+
+string name; //姓名
+
+string sex; //性别
+
+int old; //年龄
+
+double power; //用电量
+
+double water; //用水量
+
+double watermoney; //水费
+
+double powermoney; //电费
+
+string flag;//缴费标志
+
+public:
+
+Person(string n=" ",string nm=" ",string s=" ",int d=0,double p=0,double w=0,double wm=0,double pm=0,string f=" 否") //构造函数
+
+{
+
+num=n;
+
+name=nm;
+
+sex=s;
+
+old=d;
+
+power=p;
+
+water=w;
+
+watermoney=wm;
+
+powermoney=pm;
+
+flag=f;
+
+}
+
+};
+
+int amount; //记录当前记录的个数
+
+class Student:virtual public Person
+
+{
+
+public:
+
+string classrome; //班级
+
+public:
+
+Student(string n=" ",string nm=" ",string s=" ",int d=0,double p=0,double w=0,string cr=" ",double wm=0,double pm=0,string f=" 否"):Person(n,nm,s,d,p,w,wm,pm,f) //构造函数
+
+{
+
+classrome=cr;
+
+}
+
+void Input();
+
+void Inputs();
+
+void Output();
+
+void Add(); //添加信息
+
+void Search(); //查询信息
+
+void Show(); //显示信息
+
+void Compile(); //修改信息
+
+void Delete(); //删除信息
+
+
+
+
+
+void Total(); //数据统计
+
+void Save(); //保存信息
+
+void Read(); //读取信息
+
+};
+
+Student stu[MAX]; //学生对象数组
+
+int cmp1(const void *a,const void *b)
+
+{
+
+Student *c=(Student *)a;
+
+Student *d=(Student *)b;
+
+if(c->num >d->num) return 1;
+
+else return -1; }
+
+void Student::Input() //输入学生信息
+
+{
+
+cout<<" 请输入学号:"<<endl;
+
+cin>>num;
+
+cout<<" 请输入姓名:"<<endl;
+
+cin>>name;
+
+cout<<" 请输入性别:"<<endl;
+
+cin>>sex;
+
+cout<<" 请输入年龄:"<<endl;
+
+cin>>old;
+
+cout<<" 请输入班级:"<<endl;
+
+cin>>classrome;
+
+cout<<" 请输入本月用水量:"<<endl;
+
+cin>>water;
+
+cout<<" 请输入本月用电量:"<<endl;
+
+cin>>power;
+
+if(water>10) //学生水电费一定额度限免
+
+watermoney=(water-10)*0.5;
+
+if(power>10)
+
+powermoney=(power-10)*0.5;
+
+}
+
+void Student::Inputs() //输入学生信息
+
+{
+
+Input();
+
+cout<<" 是否已缴水电费:"<<endl;
+
+cin>>flag;
+
+}
+
+void Student::Add()//添加学生信息
+
+{
+
+if(amount>=100)
+
+{
+
+cout<<" 用户已满～"<<endl;
+
+return;
+
+}
+
+Student s;
+
+cout<<" 输入新添人员信息"<<endl;
+
+s.Input();
+
+for(int i=0;i<amount;i++)
+
+if(s.num==stu[i].num)
+
+{
+
+cout<<" 该编号的用户已存在～"<<endl;
+
+return;
+
+}
+
+stu[amount]=s;
+
+cout<<" 添加成功～"<<endl;
+
+amount++;
+
+Save();
+
+}
+
+void Student::Search() //查询学生信息
+
+{
+
+if(amount==0)
+
+{
+
+cout<<" 当前系统无存储记录～"<<endl;
+
+return;
+
+}
+
+int chioce;
+
+cout<<" 请选择查询方式:1.按姓名查询 2.按用水量查询 3.按用电量查询"<<endl;
+
+cin>>chioce;
+
+switch(chioce)
+
+{
+
+case 1:
+
+{
+
+string name;
+
+cout<<" 请输入要查找的姓名:"<<endl;
+
+cin>>name;
+
+int k=0;
+
+cout<<" "<<" 编号 "<<"     "<<" 姓名 "<<" "<<" 性别 "<<" "<<" 年龄 "<<" "<<" 班级 "<<" "<<" 用水量 "<<" "<<" 水费 "<<" "<<" 用电量 " <<" "<<" 电费 "<<""<<" 缴费 "<<endl;
+
+for(int i=0;i<amount;i++)
+
+{
+
+if(stu[i].name==name)
+
+{
+
+
+
+cout<<setiosflags(ios::left)<<setw(13)<<stu[i].num<<setw(9)<<stu[i].name<<setw(6)<<stu[i].sex<<setw(6)<<stu[i].old<<setw(10)<<stu[i].classrome<<setw(8)<<stu[i].water<<setw(8)<<stu[i].watermoney<<setw(8)<<stu[i].power<<setw(7)<<stu[i].powermoney<<stu[i].flag<<"\n"<<endl;
+
+k=1;
+
+}
+
+}
+
+if(k==0)
+
+cout<<" 查无此人～"<<endl;
+
+}break;
+
+case 2:
+
+{
+
+cout<<" 请输入要查找的用水量:"<<endl;
+
+double waters;
+
+cin>>waters;
+
+int k=0;
+
+cout<<" "<<" 编号 "<<"     "<<" 姓名 "<<" "<<" 性别 "<<" "<<" 年龄 "<<" "<<" 班级 "<<" "<<" 用水量 "<<" "<<" 水费 "<<" "<<" 用电量 " <<" "<<" 电费 "<<" "<<" 缴费 "<<endl;
+
+for(int i=0;i<amount;i++)
+
+if(stu[i].water==waters)
+
+{
+
+
+
+cout<<setiosflags(ios::left)<<setw(13)<<stu[i].num<<setw(9)<<stu[i].name<<setw(6)<<stu[i].sex<<setw(6)<<stu[i].old<<setw(10)<<stu[i].classrome<<setw(8)<<stu[i].water<<setw(8)<<stu[i].watermoney<<setw(8)<<stu[i].power<<setw(7)<<stu[i].powermoney<<stu[i].flag<<" \n"<<endl;
+
+k=1;
+
+}
+
+if(k==0)
+
+cout<<" 查无此用水量～"<<endl;
+
+}break;
+
+case 3:
+
+{
+
+cout<<" 请输入要查找的用电量:"<<endl;
+
+double powers;
+
+cin>>powers;
+
+int k=0;
+
+cout<<" "<<" 编号 "<<"     "<<" 姓名 "<<" "<<" 性别 "<<" "<<" 年龄 "<<" "<<" 班级 "<<" "<<" 用水量 "<<" "<<" 水费 "<<" "<<" 用电量 " <<" "<<" 电费 "<<" "<<" 缴费 "<<endl;
+
+for(int i=0;i<amount;i++)
+
+if(stu[i].power==powers)
+
+{
+
+
+
+cout<<setiosflags(ios::left)<<setw(13)<<stu[i].num<<setw(9)<<stu[i].name<<setw(6)<<stu[i].sex<<setw(6)<<stu[i].old<<setw(10)<<stu[i].classrome<<setw(8)<<stu[i].water<<setw(8)<<stu[i].watermoney<<setw(8)<<stu[i].power<<setw(7)<<stu[i].powermoney<<stu[i].flag<<"\n"<<endl;
+
+k=1;
+
+}
+
+if(k==0)
+
+cout<<" 查无此用电量～"<<endl;
+
+}break;
+
+default:cout<<" 无此选项～请重试～"<<endl;
+
+break;
+
+}
+
+}
+
+void Student::Show() //显示学生信息
+
+{
+
+if(amount==0)
+
+{
+
+cout<<" 当前系统无存储记录～"<<endl;
+
+return;
+
+}
+
+cout<<" 学生信息:"<<endl;
+
+cout<<" "<<" 编号 "<<"     "<<" 姓名 "<<"  "<<" 性别 "<<" "<<" 年龄 "<<" "<<" 班级 "<<" "<<" 用水量 "<<" "<<" 水费 "<<" "<<" 用电量 " <<" "<<" 电费 "<<" "<<" 缴费 "<<endl;
+
+for(int i=0;i<amount;i++)
+
+
+
+cout<<setiosflags(ios::left)<<setw(13)<<stu[i].num<<setw(9)<<stu[i].name<<setw(7)<<stu[i].sex<<setw(7)<<stu[i].old<<setw(8)<<stu[i].classrome<<setw(7)<<stu[i].water<<setw(9)<<stu[i].watermoney<<setw(8)<<stu[i].power<<setw(7)<<stu[i].powermoney<<stu[i].flag<<"\n"<<endl;
+
+}
+
+void Student::Compile() //修改学生信息
+
+{
+
+
+
+
+
+if(amount==0)
+
+{
+
+cout<<" 当前系统无存储记录～ "<<endl;
+
+return;
+
+}
+
+string nums;
+
+cout<<" 请输入要修改的学号: "<<endl;
+
+cin>>nums;
+
+int k=0;
+
+for(int i=0;i<amount;i++)
+
+if(stu[i].num==nums)
+
+{
+
+cout<<" 原有信息: "<<endl;
+
+cout<<" "<<" 编号 "<<"     "<<" 姓名 "<<" "<<" 性别 "<<" "<<" 年龄 "<<" "<<" 班级 "<<" "<<" 用水量 "<<" "<<" 水费 "<<" "<<" 用电量 " <<" "<<" 电费 "<<" "<<" 缴费 "<<endl;
+
+
+
+cout<<setiosflags(ios::left)<<setw(13)<<stu[i].num<<setw(9)<<stu[i].name<<setw(6)<<stu[i].sex<<setw(6)<<stu[i].old<<setw(10)<<stu[i].classrome<<setw(7)<<stu[i].water<<setw(9)<<stu[i].watermoney<<setw(8)<<stu[i].power<<setw(7)<<stu[i].powermoney<<stu[i].flag<<endl;
+
+cout<<" 请对这位学生的信息进行修改: "<<endl;
+
+Student s;
+
+s.Inputs();
+
+for(int t=0;t<amount;t++)
+
+if(s.num==stu[t].num)
+
+{
+
+if(t==i) continue;
+
+cout<<" 该编号的用户已存在～修改不成功～"<<endl;
+
+return;
+
+}
+
+stu[i]=s;
+
+cout<<" 现有信息: "<<endl;
+
+cout<<" "<<" 编号 "<<"     "<<" 姓名 "<<" "<<" 性别 "<<" "<<" 年龄 "<<" "<<" 班级 "<<" "<<" 用水量 "<<" "<<" 水费 "<<" "<<" 用电量 " <<" "<<" 电费 "<<" "<<" 缴费 "<<endl;
+
+
+
+cout<<setiosflags(ios::left)<<setw(13)<<stu[i].num<<setw(9)<<stu[i].name<<setw(6)<<stu[i].sex<<setw(6)<<stu[i].old<<setw(10)<<stu[i].classrome<<setw(8)<<stu[i].water<<setw(8)<<stu[i].watermoney<<setw(8)<<stu[i].power<<setw(7)<<stu[i].powermoney<<stu[i].flag<<endl;
+
+cout<<" 修改成功～ "<<endl;
+
+k=1;
+
+}
+
+if(k==0)
+
+cout<<" 查无此人～ "<<endl;
+
+Save();
+
+}
+
+void Student::Delete() //删除学生信息
+
+{
+
+if(amount==0)
+
+{
+
+cout<<" 当前系统无存储记录～"<<endl;
+
+return;
+
+}
+
+cout<<" 1.按学号删除 2.按姓名删除"<<endl;
+
+int chioce;
+
+cin>>chioce;
+
+switch(chioce)
+
+{
+
+case 1:
+
+{
+
+cout<<" 请输入学号:"<<endl;
+
+string nums;
+
+cin>>nums;
+
+int k=0;
+
+for(int i=0;i<amount;i++)
+
+if(stu[i].num==nums)
+
+{
+
+cout<<" 要删除的学生信息:"<<endl;
+
+cout<<" "<<"编号"<<" "<<"姓名"<<" "<<"性别"<<" "<<"年龄"<<" "<<"班级"<<" "<<"用水量"<<" "<<"水费"<<" "<<"用电量" <<" "<<"电费"<<" "<<"缴费"<<endl;
+
+
+
+cout<<setiosflags(ios::left)<<setw(13)<<stu[i].num<<setw(9)<<stu[i].name<<setw(6)<<stu[i].sex<<setw(6)<<stu[i].old<<setw(10)<<stu[i].classrome<<setw(8)<<stu[i].water<<setw(8)<<stu[i].watermoney<<setw(8)<<stu[i].power<<setw(7)<<stu[i].powermoney<<stu[i].flag<<"\n"<<endl;
+
+int choice=2;
+
+cout<<" 是否删除此信息:0.否 1.是"<<endl;
+
+cin>>choice;
+
+
+
+
+
+switch(choice)
+
+{
+
+case 1:
+
+for(int j=i;j<amount-1;j++)
+
+stu[j]=stu[j+1];
+
+amount--;
+
+k=1;
+
+break;
+
+case 0:k=2;break;
+
+default:cout<<" 无此项～"<<endl;break;
+
+}
+
+}
+
+if(k==1)
+
+cout<<" 删除成功～"<<endl;
+
+else if(k==2)
+
+cout<<" 查找到此学号，但未删除～"<<endl;
+
+else
+
+cout<<" 查无此学号～"<<endl;
+
+Save();
+
+}break;
+
+case 2:
+
+{
+
+cout<<" 请输入姓名:"<<endl;
+
+string names;
+
+cin>>names;
+
+int k=0;
+
+for(int i=0;i<amount;i++)
+
+if(stu[i].name==names)
+
+{
+
+cout<<" 要删除的学生信息:"<<endl;
+
+cout<<" "<<" 编号"<<" "<<"姓名"<<" "<<"性别"<<" "<<"年龄"<<" "<<"班级"<<" "<<"用水量"<<" "<<"水费"<<" "<<"用电量" <<" "<<"电费"<<" "<<"缴费"<<endl;
+
+
+
+cout<<setiosflags(ios::left)<<setw(13)<<stu[i].num<<setw(9)<<stu[i].name<<setw(6)<<stu[i].sex<<setw(6)<<stu[i].old<<setw(10)<<stu[i].classrome<<setw(8)<<stu[i].water<<setw(8)<<stu[i].watermoney<<setw(8)<<stu[i].power<<setw(7)<<stu[i].powermoney<<stu[i].flag<<"\n"<<endl;
+
+int choice=2;
+
+cout<<" 是否删除此信息:0.否 1.是"<<endl;
+
+cin>>choice;
+
+
+
+
+
+switch(choice)
+
+{
+
+case 0:
+
+k=2;break;
+
+case 1:
+
+for(int j=i;j<amount-1;j++)
+
+stu[j]=stu[j+1];
+
+amount--;
+
+k=1;
+
+break;
+
+default:cout<<" 无此项～"<<endl;break;
+
+}
+
+if(k==1)
+
+cout<<" 删除成功～"<<endl;
+
+else if(k==2)
+
+cout<<" 查找到此人，但未删除～"<<endl;
+
+}
+
+if(k==0)
+
+cout<<" 查无此人～"<<endl;
+
+Save();
+
+}break;
+
+default:
+
+cout<<" 无此项～"<<endl;break;
+
+}
+
+}
+
+void Student::Total() //统计学生信息
+
+{
+
+if(amount==0)
+
+{
+
+cout<<" 当前系统无存储记录～ "<<endl;
+
+return;
+
+}
+
+cout<<" 未缴费人员: "<<endl;
+
+cout<<" "<<" 学号 "<<"     "<<" 姓名 "<<" "<<" 性别 "<<" "<<" 年龄 "<<""<<" 班级 "<<" "<<" 用水量 "<<" "<<" 水费 "<<" "<<" 用电量 " <<" "<<" 电费 "<<" "<<" 缴费 "<<endl;
+
+int t=0;
+
+for(int i=0;i<amount;i++)
+
+if( stu[i].flag == " 否 " )
+
+{
+
+
+
+cout<<setiosflags(ios::left)<<setw(13)<<stu[i].num<<setw(9)<<stu[i].name<<setw(7)<<stu[i].sex<<setw(7)<<stu[i].old<<setw(8)<<stu[i].classrome<<setw(7)<<stu[i].water<<setw(9)<<stu[i].watermoney<<setw(8)<<stu[i].power<<setw(7)<<stu[i].powermoney<<stu[i].flag<<"\n"<<endl;
+
+t=1;
+
+}
+
+if(t==0)
+
+cout<<" 无未缴费人员～"<<endl;
+
+}
+
+void Student::Save() //更新记录
+
+{
+
+qsort(stu,amount,sizeof(stu[0]),cmp1);
+
+ofstream out_file(" 学生.txt",ios::out); //将添加记录更新到文件
+
+if(!out_file)
+
+{
+
+cout<<" 打开失败～"<<endl;
+
+return;
+
+}
+
+for(int i=0;i<amount;i++)
+
+out_file<<stu[i].num<<" "<<stu[i].name<<" "<<stu[i].sex<<" "<<stu[i].old<<" "<<stu[i].classrome<<" "<<stu[i].water<<" "<<stu[i].watermoney<<" "<<stu[i].power<<" "<<stu[i].powermoney<<" "<<stu[i].flag<<endl;
+
+out_file.close();
+
+}
+
+void Student::Read() //读取学生信息
+
+{
+
+ifstream in_file(" 学生.txt",ios::in);
+
+if(!in_file)
+
+{
+
+cout<<" 打开失败～"<<endl;
+
+return;
+
+}
+
+int i=0;
+
+cout<<" 学生信息:"<<endl;
+
+cout<<" "<<" 编号 "<<"     "<<" 姓名 "<<" "<<" 性别 "<<" "<<" 年龄 "<<""<<" 班级 "<<" "<<" 用水量 "<<" "<<" 水费 "<<" "<<" 用电量 " <<" "<<" 电费 "<<" "<<" 缴费 "<<endl;
+
+while(in_file>>stu[i].num>>stu[i].name>>stu[i].sex>>stu[i].old>>stu[i].classrome>>stu[i].water>>stu[i].watermoney>>stu[i].power>>stu[i].powermoney>>stu[i].flag)
+
+{
+
+cout<<setiosflags(ios::left)<<setw(13)<<stu[i].num<<setw(8)<<stu[i].name<<setw(7)<<stu[i].sex<<setw(7)<<stu[i].old<<setw(8)<<stu[i].classrome<<setw(7)<<stu[i].water<<setw(9)<<stu[i].watermoney<<setw(8)<<stu[i].power<<setw(7)<<stu[i].powermoney<<stu[i].flag<<"\n"<<endl;
+
+i++;
+
+}
+
+in_file.close();
+
+}
+
+class Teacher:virtual public Person
+
+{
+
+public:
+
+string depart; //工作部门
+
+public:
+
+Teacher(string n=" ",string nm=" ",string s=" ",int d=0,double p=0,double w=0,string dp=" ",double wm=0,double pm=0,string f=" 否"):Person(n,nm,s,d,p,w,wm,pm,f) //构造函数
+
+{
+
+depart=dp;
+
+}
+
+void Input();
+
+void Inputs();
+
+void Add(); //添加信息
+
+void Search(); //查询信息
+
+void Show(); //显示信息
+
+void Compile(); //修改信息
+
+void Delete(); //删除信息
+
+void Total(); //数据统计
+
+void Saves();//更新记录
+
+void Read(); //读取信息
+
+
+
+};
+
+Teacher tea[MAX];
+
+int cmp2(const void *a,const void *b)
+
+{
+
+Teacher *c=(Teacher *)a;
+
+Teacher *d=(Teacher *)b;
+
+if(c->num >d->num) return 1;
+
+else return -1;
+
+}
+
+void Teacher::Input() //输入教师信息
+
+{
+
+cout<<" 请输入职工号:"<<endl;
+
+cin>>num;
+
+cout<<" 请输入姓名:"<<endl;
+
+cin>>name;
+
+cout<<" 请输入性别:"<<endl;
+
+cin>>sex;
+
+cout<<" 请输入年龄:"<<endl;
+
+cin>>old;
+
+cout<<" 请输入工作部门:"<<endl;
+
+cin>>depart;
+
+cout<<" 请输入本月用水量:"<<endl;
+
+cin>>water;
+
+cout<<" 请输入本月用电量:"<<endl;
+
+cin>>power;
+
+watermoney=water*0.5;
+
+powermoney=power*0.5; }
+
+void Teacher::Inputs() //输入教师信息
+
+{
+
+Input();
+
+cout<<" 是否已缴水电费:"<<endl;
+
+cin>>flag;
+
+}
+
+void Teacher::Add()//添加教师信息
+
+{
+
+	if(amount>=100)
+
+		{
+
+		cout<<" 用户已满～"<<endl;
+
+		return;
+
+		}
+
+	Teacher t;
+
+	cout<<" 输入新添人员信息"<<endl;
+
+	t.Input();
+
+	for(int i=0;i<amount;i++)
+
+		if(t.num==tea[i].num)
+
+			{
+
+			cout<<" 该编号的用户已存在～"<<endl;
+
+			return;
+
+			}
+
+		tea[amount]=t;
+
+		cout<<" 添加成功～"<<endl;
+
+		amount++;
+
+		Saves();
+
+}
+
+void Teacher::Search() //查询教师信息
+
+{  
+
+if(amount==0)
+
+{
+
+cout<<" 当前系统无存储记录～"<<endl;
+
+return;
+
+}
+
+int chioce;
+
+cout<<" 请选择查询方式:1.按姓名查询 2.按用水量查询 3.按用电量查询"<<endl;
+
+cin>>chioce;
+
+switch(chioce)
+
+{
+
+case 1:
+
+{
+
+string name;
+
+cout<<" 请输入要查找的姓名:"<<endl;
+
+cin>>name;
+
+int k=0;
+
+cout<<" 职工号 "<<" "<<" 姓名 "<<" "<<" 性别 "<<" "<<" 年龄 "<<" "<<" 工作部门 "<<" "<<" 用水量 "<<" "<<" 水费 "<<" "<<" 用电量 " <<" "<<" 电费 "<<" "<<" 缴费 "<<endl;
+
+for(int i=0;i<amount;i++)
+
+{
+
+if( tea[i].name == name )
+
+{
+	
+cout<< setiosflags(ios::left)<<setw(10)<< tea[i].num<<setw(9)<< tea[i].name<<setw(6)<< tea[i].sex<<setw(6)<< tea[i].old<<setw(14)<< tea[i].depart<<setw(8)<< tea[i].water<<setw(7)<< tea[i].watermoney<<setw(8)<< tea[i].power<<setw(7)<< tea[i].powermoney<< tea[i].flag<<" \n"<<endl;
+
+k=1;
+
+}
+
+}
+
+if(k==0)
+
+cout<<" 查无此人～"<<endl;
+
+}break;
+
+case 2:
+
+{
+
+cout<<" 请输入要查找的用水量:"<<endl;
+
+double waters;
+
+cin>>waters;
+
+int k=0;
+
+cout<<" 职工号 "<<" "<<" 姓名 "<<" "<<" 性别 "<<" "<<" 年龄 "<<" "<<" 工作部门 "<<" "<<" 用水量 "<<" "<<" 水费 "<<" "<<" 用电量 " <<" "<<" 电费 "<<" "<<" 缴费 "<<endl;
+
+for(int i=0;i<amount;i++)
+
+if( tea[i].water == waters )
+
+{
+
+cout<< setiosflags(ios::left)<<setw(10)<< tea[i].num<<setw(9)<< tea[i].name<<setw(6)<< tea[i].sex<<setw(6)<< tea[i].old<<setw(14)<< tea[i].depart<<setw(8)<< tea[i].water<<setw(7)<< tea[i].watermoney<<setw(8)<< tea[i].power<<setw(7)<< tea[i].powermoney<< tea[i].flag<<endl;
+
+k=1;
+
+}
+
+if(k==0)
+
+cout<<" 查无此用水量～"<<endl;
+
+}break;
+
+case 3:
+
+{
+
+cout<<" 请输入要查找的用电量:"<<endl;
+
+double powers;
+
+cin>>powers;
+
+int k=0;
+
+cout<<" 职工号 "<<" "<<" 姓名 "<<" "<<" 性别 "<<" "<<" 年龄 "<<" "<<" 工作部门 "<<" "<<" 用水量 "<<" "<<" 水费 "<<" "<<" 用电量 " <<" "<<" 电费 "<<" "<<" 缴费 "<<endl;
+
+for(int i=0;i<amount;i++)
+
+if(tea[i].power==powers)
+
+{
+
+cout<< setiosflags(ios::left)<<setw(10)<< tea[i].num<<setw(9)<< tea[i].name<<setw(6)<< tea[i].sex<<setw(6)<< tea[i].old<<setw(14)<< tea[i].depart<<setw(8)<< tea[i].water<<setw(7)<< tea[i].watermoney<<setw(8)<< tea[i].power<<setw(7)<< tea[i].powermoney<< tea[i].flag<<endl;
+
+k=1;
+
+}
+
+if(k==0)
+
+cout<<" 查无此用电量～"<<endl;
+
+}break;
+
+default:cout<<" 无此选项～请重试～"<<endl;
+
+break;
+
+
+
+
+
+}
+
+}
+
+void Teacher::Show() //显示教师信息
+
+{
+
+if(amount==0)
+
+{
+
+cout<<" 当前系统无存储记录～"<<endl;
+
+return;
+
+}
+
+cout<<" 教师信息:"<<endl;
+
+cout<<" 职工号 "<<"     "<<" 姓名 "<<" "<<" 性别 "<<" "<<" 年龄 "<<" "<<" 工作部门 "<<" "<<" 用水量 "<<" "<<" 水费 "<<" "<<" 用电量 " <<" "<<" 电费 "<<" "<<" 缴费 "<<endl;
+
+for(int i=0;i<amount;i++)
+
+
+
+cout<< setiosflags(ios::left)<<setw(13)<< tea[i].num<<setw(9)<< tea[i].name<<setw(6)<< tea[i].sex<<setw(8)<< tea[i].old<<setw(12)<< tea[i].depart<<setw(7)<< tea[i].water<<setw(8)<< tea[i].watermoney<<setw(8)<< tea[i].power<<setw(7)<< tea[i].powermoney<< tea[i].flag<<" \n"<<endl;
+
+}
+
+void Teacher::Compile() // 修改教师信息
+
+{
+
+if(amount==0)
+
+{
+
+cout<<" 当前系统无存储记录～"<<endl;
+
+return;
+
+}
+
+string nums;
+
+cout<<" 请输入要修改的职工号:"<<endl;
+
+cin>>nums;
+
+int k=0;
+
+for(int i=0;i<amount;i++)
+
+if( tea[i].num == nums )
+
+{
+
+cout<<" 原有信息；"<<endl;
+
+cout<<" 职工号 "<<" "<<" 姓名 "<<" "<<" 性别 "<<" "<<" 年龄 "<<" "<<" 工作部门 "<<" "<<" 用水量 "<<" "<<" 水费 "<<" "<<" 用电量 " <<" "<<" 电费 "<<" "<<" 缴费 "<<endl;
+
+
+
+cout<< setiosflags(ios::left)<<setw(10)<< tea[i].num<<setw(9)<< tea[i].name<<setw(6)<< tea[i].sex<<setw(6)<< tea[i].old<<setw(14)<< tea[i].depart<<setw(7)<< tea[i].water<<setw(8)<< tea[i].watermoney<<setw(8)<< tea[i].power<<setw(7)<< tea[i].powermoney<< tea[i].flag<<"\n"<<endl;
+
+cout<<" 请对这位教师的信息进行修改: "<<endl;
+
+Teacher t;
+
+t.Inputs();
+
+for(int k=0;k<amount;k++)
+
+if(t.num==tea[k].num)
+
+{
+
+if(k==i) continue;
+
+cout<<" 该编号的用户已存在～修改不成功～"<<endl;
+
+return;
+
+}
+
+tea[i]=t;
+
+cout<<" 现有信息:"<<endl;
+
+cout<<" 职工号 "<<" "<<" 姓名 "<<" "<<" 性别 "<<" "<<" 年龄 "<<" "<<" 工作部门 "<<" "<<" 用水量 "<<" "<<" 水费 "<<" "<<"  用电量 " <<" "<<" 电费 "<<" "<<" 缴费 "<<endl;
+
+cout<< setiosflags(ios::left)<<setw(10)<< tea[i].num<<setw(9)<< tea[i].name<<setw(6)<< tea[i].sex<<setw(6)<< tea[i].old<<setw(14)<< tea[i].depart<<setw(8)<< tea[i].water<<setw(7)<< tea[i].watermoney<<setw(8)<< tea[i].power<<setw(7)<< tea[i].powermoney<< tea[i].flag<<"\n"<<endl;
+
+cout<<" 修改成功～"<<endl;
+
+k=1;
+
+}
+
+if(k==0)
+
+cout<<" 查无此人～"<<endl;
+
+Saves();
+
+}
+
+void Teacher::Delete() //删除教师信息
+
+{
+
+if(amount==0)
+
+{
+
+cout<<" 当前系统无存储记录～"<<endl;
+
+return;
+
+}
+
+cout<<" 1.按职工号删除 2.按姓名删除"<<endl;
+
+int chioce;
+
+cin>>chioce;
+
+switch(chioce)
+
+{
+
+case 1:
+
+{
+
+cout<<" 请输入职工号:"<<endl;
+
+string nums;
+
+cin>>nums;
+
+int k=0;
+
+for(int i=0;i<amount;i++)
+
+if( tea[i].num == nums )
+
+{
+
+cout<<" 要删除的教师信息:"<<endl;
+
+cout<<" 职工号"<<" "<<" 姓名"<<" "<<" 性别"<<" "<<" 年龄"<<" "<<" 工作部门"<<" "<<" 用水量"<<" "<<" 水费"<<" "<<" 用电量" <<" "<<" 电费"<<" "<<" 缴费"<<endl;
+
+cout<< setiosflags(ios::left)<<setw(10)<< tea[i].num<<setw(9)<< tea[i].name<<setw(6)<< tea[i].sex<<setw(6)<< tea[i].old<<setw(14)<< tea[i].depart<<setw(8)<< tea[i].water<<setw(7)<< tea[i].watermoney<<setw(8)<< tea[i].power<<setw(7)<< tea[i].powermoney<< tea[i].flag<<"\n"<<endl;
+
+int choice=2;
+
+cout<<" 是否删除此信息:0.否 1.是"<<endl;
+
+cin>>choice;
+
+switch(choice)
+
+{
+
+case 0:
+
+k=2;break;
+
+case 1:
+
+for(int j=i;j<amount-1;j++)
+
+tea[j]=tea[j+1];
+
+amount--;
+
+k=1;
+
+break;
+
+default:cout<<" 无此项～"<<endl;break;
+
+}
+
+}
+
+if(k==1)
+
+cout<<" 删除成功～"<<endl;
+
+else if(k==2)
+
+cout<<" 查找到此职工号，但未删除～"<<endl;
+
+
+
+
+
+else
+
+cout<<" 查无此职工号～"<<endl;
+
+Saves();
+
+}break;
+
+case 2:
+
+{
+
+cout<<" 请输入姓名:"<<endl;
+
+string names;
+
+cin>>names;
+
+int k=0;
+
+for(int i=0;i<amount;i++)
+
+if(tea[i].name==names)
+
+{
+
+cout<<" 要删除的教师信息:"<<endl;
+
+cout<<" 职工号"<<" "<<" 姓名"<<" "<<" 性别"<<" "<<" 年龄"<<" "<<" 工作部门"<<" "<<" 用水量"<<" "<<" 水费"<<" "<<" 用电量" <<" "<<" 电费"<<" "<<" 缴费"<<endl;
+
+
+
+cout<<setiosflags(ios::left)<<setw(10)<<tea[i].num<<setw(9)<<tea[i].name<<setw(6)<<tea[i].sex<<setw(6)<<tea[i].old<<setw(14)<<tea[i].depart<<setw(8)<<tea[i].water<<setw(7)<<tea[i].watermoney<<setw(8)<<tea[i].power<<setw(7)<<tea[i].powermoney<<tea[i].flag<<"\n"<<endl;
+
+int choice=2;
+
+cout<<" 是否删除此信息:0.否 1.是"<<endl;
+
+cin>>choice;
+
+switch(choice)
+
+{
+
+case 0:
+
+k=2;break;
+
+case 1:
+
+for(int j=i;j<amount-1;j++)
+
+tea[j]=tea[j+1];
+
+amount--;
+
+k=1;
+
+break;
+
+default:cout<<" 无此项～"<<endl;break;
+
+}
+
+if(k==1)
+
+cout<<" 删除成功～"<<endl;
+
+else if(k==2)
+
+cout<<" 查到此姓名，但未删除～"<<endl;
+
+
+
+
+}
+
+if(k==0)
+
+cout<<" 查无此姓名～"<<endl;
+
+Saves();
+
+}break;
+
+default:
+
+cout<<" 无此项～"<<endl;break;
+
+}
+
+}
+
+void Teacher::Total() //统计教师信息
+
+{
+
+if(amount==0)
+
+{
+
+cout<<" 当前系统无存储记录～"<<endl;
+
+return;
+
+}
+
+cout<<" 未缴费人员:"<<endl;
+
+cout<<" 职工号"<<" "<<" 姓名"<<" "<<" 性别"<<" "<<" 年龄"<<" "<<" 工作部门"<<" "<<" 用水量"<<" "<<" 水费"<<" "<<" 用电量" <<" "<<" 电费"<<" "<<" 缴费"<<endl;
+
+int k=0;
+
+for(int i=0;i<amount;i++)
+
+if( tea[i].flag == " 否 ")
+
+{
+
+
+
+cout<< setiosflags(ios::left)<<setw(10)<< tea[i].num<<setw(9)<< tea[i].name<<setw(6)<< tea[i].sex<<setw(6)<< tea[i].old<<setw(14)<< tea[i].depart<<setw(8)<< tea[i].water<<setw(7)<< tea[i].watermoney<<setw(8)<< tea[i].power<<setw(7)<< tea[i].powermoney<< tea[i].flag<<"\n"<<endl;
+
+k=1;
+
+}
+
+if(k==0)
+
+cout<<" 无未缴费人员～"<<endl;
+
+}
+
+void Teacher::Saves() //更新记录
+
+{
+
+qsort(tea,amount,sizeof(tea[0]),cmp2);
+
+ofstream out_file(" 教师.txt",ios::out);//将修改后的记录更新的文件中
+
+if(!out_file)
+
+{
+
+cout<<" 打开失败～"<<endl;
+
+
+
+
+
+return;
+
+}
+
+for(int i=0;i<amount;i++)
+
+{
+
+out_file<< tea[i].num<<" "<< tea[i].name<<" "<< tea[i].sex<<" "<< tea[i].old<<" "<< tea[i].depart<<" "<< tea[i].water<<" "<< tea[i].watermoney<<" "<< tea[i].power<<" "<< tea[i].powermoney<<" "<< tea[i].flag<<endl;
+
+}
+
+out_file.close();
+
+}
+
+void Teacher::Read() //读取教师信息
+
+{
+
+ifstream in_file(" 教师.txt",ios::in);
+
+if(!in_file)
+
+{
+
+cout<<" 打开失败～"<<endl;
+
+return;
+
+}
+
+int i=0;
+
+cout<<" 教师信息: "<<endl;
+
+cout<<" 职工号 "<<" "<<" 姓名 "<<" "<<" 性别 "<<" "<<" 年龄 "<<" "<<" 工作部门 "<<" "<<" 用水量 "<<" "<<" 水费 "<<" "<<" 用电量 " <<" "<<" 电费 "<<" "<<" 缴费 "<<endl;
+
+while(in_file>>tea[i].num>>tea[i].name>>tea[i].sex>>tea[i].old>>tea[i].depart>>tea[i].water>>tea[i].watermoney>>tea[i].power>>tea[i].powermoney>>tea[i].flag)
+
+{
+
+
+
+cout<< setiosflags(ios::left)<<setw(10)<< tea[i].num<<setw(9)<< tea[i].name<<setw(6)<< tea[i].sex<<setw(6)<< tea[i].old<<setw(14)<< tea[i].depart<<setw(7)<< tea[i].water<<setw(8)<< tea[i].watermoney<<setw(8)<< tea[i].power<<setw(7)<< tea[i].powermoney<< tea[i].flag<<"\n"<<endl;
+
+i++;
+
+}
+
+in_file.close();
+
+}
+
+void teacherMenu(); //声明学生页面主菜单函数
+
+void studentMenu(); //声明教师页面主菜单函数
+
+int main()
+
+{
+
+int choice=3;
+
+while(choice)
+{
+cout<<"******************************************************************************"<<endl;
+cout<<"*                                                                            *"<<endl;
+cout<<"*                          高校水电费管理系统                                *"<<endl;
+cout<<"*                                                                            *"<<endl;
+cout<<"*            0.退出系统 1.教师水电费管理系统 2.学生水电费管理系统            *"<<endl;
+cout<<"*                                                                            *"<<endl;
+cout<<"******************************************************************************\n"<<endl;
+cout<<" 请输入你的选择:"<<endl;
+cin>>choice;
+
+switch(choice)
+
+{
+	case 0:cout<<" 您已退出系统～"<<endl;
+		break;
+
+	case 1:teacherMenu();
+		break;
+
+	case 2:studentMenu();
+		break;
+
+	default:cout<<" 不存在此选项～请重选～"<<endl;
+		break;
+
+}
+
+cout<<"*************************欢迎下次您的再次使用*********************************"<<endl;
+
+}
+
+return 0;
+
+}
+
+void studentMenu()
+
+{
+
+amount=0;
+
+ifstream in_file(" 学生.txt",ios::in);//读取文件信息到系统中
+
+if(!in_file)
+
+{
+
+cout<<" 打开失败～"<<endl;
+
+}
+
+while(in_file>>stu[amount].num>>stu[amount].name>>stu[amount].sex>>stu[amount].old>>stu[amount].classrome>>stu[amount].water>>stu[amount].watermoney>>stu[amount].power>>stu[amount].powermoney>>stu[amount].flag)
+
+{
+	
+	amount++;
+
+}
+
+in_file.close();
+
+Student students;
+
+int choice = 8;
+
+while (choice != 0)
+
+{
+
+
+
+cout<<"******************************************************************************\n"<<endl;
+
+cout<<"                           学生水电费管理系统\n"<<endl;
+
+cout<<"              0.返回上层系统 1.添加学生信息 2.查询学生信息\n"
+    <<"              3.修改学生信息 4.删除学生信息 5.显示学生信息\n"
+    <<"              6.读取学生信息 7.统计学生信息\n"<<endl;
+    
+cout<<"******************************************************************************\n"<<endl;
+cout<<" 请输入你的选择:"<<endl;
+
+cin>>choice;
+
+switch (choice)
+{
+	      case 1:students.Add();
+	break;
+	  	  case 2:students.Search(); 
+	break;
+
+		  case 3:students.Compile(); 
+	break;
+
+		  case 4:students.Delete(); 
+	break;
+
+		  case 5:students.Show(); 
+	break;
+
+		  case 6:students.Read(); 
+	break;
+
+		  case 7:students.Total(); 
+	break;
+
+		  case 0:main(); 
+	break;
+
+default: cout << " 不存在此选项～请重选～ " << endl; 
+	break;
+
+}
+
+}
+
+}
+
+void teacherMenu()
+
+{
+
+amount=0;
+
+ifstream in_file(" 教师.txt",ios::in);//读取文件信息到系统中
+
+if(!in_file)
+
+{
+
+cout<<" 打开失败～"<<endl;
+
+}
+
+while(in_file>>tea[amount].num>>tea[amount].name>>tea[amount].sex>>tea[amount].old>>tea[amount].depart>>tea[amount].water>>tea[amount].watermoney>>tea[amount].power>>tea[amount].powermoney>>tea[amount].flag)
+
+{
+
+amount++;
+
+}
+
+in_file.close();
+
+Teacher teachers;
+
+int choice = 8;
+
+while (choice != 0)
+
+{
+
+
+
+cout<<"******************************************************************************\n"<<endl;
+
+cout<<"                           教师水电费管理系统\n"<<endl;
+
+cout<<"              0.返回上层系统 1.添加教师信息 2.查询教师信息\n"
+    <<"              3.修改教师信息 4.删除教师信息 5.显示教师信息\n"
+	<<"              6.读取教师信息 7.统计教师信息\n"<<endl;
+	
+cout<<"******************************************************************************\n"<<endl;
+
+cout<<" 请输入你的选择:"<<endl;
+
+cin>>choice;
+
+switch (choice)
+
+{
+
+ 	   case 1:teachers.Add();
+	break;
+
+		  case 2:teachers.Search(); 
+	break;
+
+		  case 3:teachers.Compile(); 
+	break;
+
+		  case 4:teachers.Delete(); 
+	break;
+
+		  case 5:teachers.Show(); 
+	break;
+
+		  case 6:teachers.Read(); 
+	break;
+
+		  case 7:teachers.Total(); 
+	break;
+
+		  case 0:main(); 
+	break;
+
+default: cout << " 不存在此选项～请重选～ " << endl;
+ 	break;
+
+}
+
+}
+
+}
