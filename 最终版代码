@@ -1,0 +1,743 @@
+#include<iostream>
+#include<string>
+#include<fstream> //文件流的头文件
+using namespace std; 
+void Window();
+void menu1();
+void menu2();
+int CountLines(string filename);
+int course_num=0;
+class course 
+{
+public:
+	course(){};
+	void addcourse();        //添加课程
+	void displaycourse();    //查看课程
+	void canclecourse();     //删除课程
+	void changecourse();      //修改课程
+	void Displaycourse();
+	friend int save(string);
+	friend int read(string);
+private:
+	float number;
+	string name;
+	string week;
+	string time;
+	string address;
+	string teacher;
+
+};
+course c[100];
+class Log          //注册登录
+{
+public:
+	Log(){};
+	void Register();    //注册
+	void Enter();       //登录
+	friend int readfile1(string file);
+	friend int readfile2(string file);
+	friend int writefile(string file);
+private:
+	string id;
+	string name;
+	string password;
+};
+Log log_s[100];           //建立登录对象数组
+int sum=0;            //记录数量
+
+int Lines(string file)  //获取文件行数
+{
+    ifstream ReadFile;
+    int n=0;
+    string tmp;
+    ReadFile.open(file,ios::in);//ios::in 表示以只读的方式读取文件
+    if(ReadFile.fail())//文件打开失败:返回0
+    {
+        return 0;
+    }
+    else//文件存在
+    {
+        while(getline(ReadFile,tmp,'\n'))
+        {
+            n++;
+        }
+        ReadFile.close();
+        return n;
+    }
+}
+
+int readfile1(string file)         //读取文件操作，将文件账号密码读到对象数组中
+{
+ sum=Lines("student_log.txt");
+ ifstream fin(file);
+ if(!fin)
+ {cout<<"读取数据失败！"<<endl;return 0;}
+ for(int i=0;i<sum;i++)
+	{
+		fin>>log_s[i].id>>log_s[i].name>>log_s[i].password; 
+ }
+ fin.close();
+ return 1;
+}
+
+int readfile2(string file)         //读取文件操作，将文件账号密码读到对象数组中
+{
+ sum=Lines("teacher_log.txt");
+ ifstream fin(file);
+ if(!fin)
+ {cout<<"读取数据失败！"<<endl;return 0;}
+ for(int i=0;i<sum;i++)
+	{
+		fin>>log_s[i].id>>log_s[i].name>>log_s[i].password; 
+ }
+ fin.close();
+ return 1;
+}
+
+int writefile(string file)      //写文件操作，将对象数组中的数据写到相应文件中去
+{
+ ofstream on(file);
+ if(!on)
+ {cout<<"记录数据失败！"<<endl; return 0;}
+ for(int i=0;i<sum;i++)
+ {
+	 on<<log_s[i].id<<" "<<log_s[i].name<<" "<<log_s[i].password;
+	 if(i!=sum-1){on<<"\n";}
+ }
+ on.close();
+ return 1;
+}
+
+void Log::Register()   //注册
+{
+ int i,j,p;
+ string p1,p2;
+ Log person;
+ flag0:
+ cout<<"\t\t\t请选择你的角色：1.学生    2.管理员";
+ cout<<"（回到上一页请选择3）"<<endl;
+ cin>>p;
+ switch(p)
+ {
+ case 1:
+	 sum=0;
+	 readfile1("student_log.txt");
+     cout<<"\t\t\t请输入你的学号:";
+flag:      //自定义标识符
+ cin>>person.id;
+ for(i=0;i<sum;i++)     
+	{
+		if(log_s[i].id==person.id)      
+	 {
+	 cout<<"\t\t\t该学号已经存在，请重新设置：";
+	 goto flag;     //goto强制跳转，无条件转移语句
+	 }
+	}
+ cout<<"\t\t\t请输入你的姓名：";
+ cin>>person.name;
+ cout<<"\t\t\t请设置你的密码：";
+flag01:
+ cin>>p1;
+ cout<<"\t\t\t请再次确定你的密码：";
+ cin>>p2;
+ if(p1!=p2)
+ {
+  cout<<"\t\t\t前后两次输入的密码不同，请重新输入：";
+  goto flag01;
+ }
+ cout<<"\t\t用户 \t"<<person.name<<" \t注册成功！"<<endl;
+ person.password=p1;
+ log_s[sum]=person;
+ sum++;
+ writefile("student_log.txt");
+break;
+ case 2:
+	 sum=0;
+	 readfile2("teacher_log.txt");
+	 cout<<"\t\t\t请输入你的教职工号:";
+flag1:      //标识符
+     cin>>person.id;
+     for(j=0;j<sum;j++)     
+	{
+		if(log_s[j].id==person.id)      
+	 {cout<<"\t\t\t该id已经存在，请重新设置：";
+	 goto flag1;     //goto强制跳转，无条件转移语句
+	 }
+	}
+     cout<<"\t\t\t请输入你的姓名：";
+     cin>>person.name;
+     cout<<"\t\t\t请设置你的密码：";
+flag02:
+     cin>>p1;
+     cout<<"\t\t\t请再次确定你的密码：";
+     cin>>p2;
+     if(p1!=p2)
+     {
+     cout<<"\t\t\t前后两次输入的密码不同，请重新输入：";
+     goto flag02;
+     }
+     cout<<"\t\t用户\t "<<person.name<<" \t注册成功！"<<endl;
+     person.password=p1;
+     log_s[sum]=person;
+	 sum++;
+	 writefile("teacher_log.txt");
+     break;
+ case 3:
+	 Window();
+	 break;
+ default:
+	 cout<<"\t\t\t选择错误，请重新选择：";
+		 goto flag0;
+ }
+ Window();
+}
+
+void Log::Enter()     //登录
+{
+ int i,j,m;
+ string idd;
+ string na;
+ string pw;
+ Log log;
+ flag6:
+ cout<<"\t\t//   你是：  1.学生    2.管理员   3.回到上一页   ://"<<endl;
+ cin>>m;
+ switch(m)
+ {
+ case 1:
+	 readfile1("student_log.txt");
+     cout<<"\t\t\t请输入你的学号：";
+flag2:
+     cin>>idd;
+	 for(i=0;i<sum;i++)     //验证id是否存在 
+	 {
+	
+	 if(log_s[i].id==idd)
+	 {
+   cout<<"\t\t\t请输入你的姓名：";
+   cin>>na;
+   cout<<"\t\t\t请输入你的密码:";
+flag3:
+   cin>>pw;
+ 	   if(log_s[i].password!=pw)
+	   {
+	    cout<<"\t\t\t密码错误，请重新输入：";
+		goto flag3;
+	   }
+	   cout<<"\t\t\t登录成功！"<<endl;break;
+	 }
+	 }
+	 if(i==sum)
+     {cout<<"\t\t\t该账号不存在，请重新输入：";
+	 goto flag2;}
+	break;
+ case 2:
+	 readfile2("teacher_log.txt");
+	 cout<<"\t\t\t请输入你的教职工号：";
+flag4:
+	 cin>>idd;
+ for(j=0;j<sum;j++)     //验证id是否存在
+ {
+  if(log_s[j].id==idd)
+  {
+   cout<<"\t\t\t请输入你的姓名：";
+cin>>na;
+cout<<"\t\t\t请输入你的密码:";
+flag5:
+   cin>>pw;
+	   if(log_s[j].password!=pw)
+	   {
+	    cout<<"\t\t\t密码错误，请重新输入：";
+		goto flag5;
+	   }
+	   cout<<"\t\t\t登录成功！"<<endl;break;
+  }}
+ if(j==sum)
+{  cout<<"\t\t\t该职工号不存在，请重新输入：";
+  goto flag4;}
+break;
+ case 3:
+	 Window();
+	 break;
+ default:
+	 cout<<"\t\t\t输入错误请重新选择：";
+	 goto flag6;
+ }
+switch(m)
+{
+case 1:
+	menu1();
+	break;
+case 2:
+	menu2();
+	break;
+default:
+	break;
+}
+}
+void Window()    //登录注册菜单
+{
+ int c;
+ Log u;
+ cout<<"\t\t//************************************************//"<<endl;
+ cout<<"\t\t//               欢迎来到选课系统                 //"<<endl;
+ cout<<"\t\t//************************************************//"<<endl;
+ cout<<"\t\t//                   1.注册账号                   //"<<endl;
+ cout<<"\t\t//                   2.登录已有账号               //"<<endl;
+ cout<<"\t\t//               (请选择编号进行操作)             //"<<endl;
+ cout<<"\t\t//************************************************//"<<endl;
+ cin>>c;
+ switch(c)
+ {
+ case 1:     //注册
+	 cout<<endl;
+     cout<<"\t\t//************************************************//"<<endl;
+     cout<<"\t\t//               欢迎来到注册页面                 //"<<endl;
+     cout<<"\t\t//************************************************//"<<endl;
+	 u.Register();
+	 break;
+ case 2:    //登录
+	 cout<<endl;
+	 cout<<"\t\t//************************************************//"<<endl;
+     cout<<"\t\t//               欢迎来到登录页面                 //"<<endl;
+     cout<<"\t\t//************************************************//"<<endl;
+	 u.Enter();
+	 break;
+ default:
+	 cout<<"\t\t\t输入错误请重新输入："<<endl;
+	 Window();
+ }
+}
+class student
+{
+public:
+	student(){};
+	void select();     //选课
+	void exit();       //退选
+	void display();    //查看已选课程
+	friend int ssave(string,int);
+private:
+	int num;
+	int bianhao;
+	string name;
+	string week;
+	string time;
+	string address;
+	string teacher;
+};
+student s[100];
+int student_num;
+void student::select()     //选课       添加课程类似
+{int student_num=0;
+  int f;
+	course c;
+	int m;
+S:system("cls");
+cout<<"\t\t*************欢迎来到选课***************"<<endl;
+c.Displaycourse();
+cout<<"\t\t\t请输入你的学号：";
+cin>>f;
+cout<<"\t\t\t请输入你想选的课程编号：";
+cin>>m;
+	student_num = CountLines("course.txt");
+	ifstream in("course.txt");
+	for (int i = 0; i < student_num; i++) {
+		in >>s[i].bianhao >> s[i].name
+			>> s[i].week >> s[i].time
+			>> s[i].address >> s[i].teacher;
+	}
+	in.close();
+	int i;
+	for (i = 0; i < student_num; i++) {
+		if (s[i].bianhao == m) {
+			cout << "\t\t课程编号 " << m<< " 信息如下：\n";
+			cout<<s[i].bianhao<<" "
+				<< s[i].name << " "
+				<< s[i].week << " "
+				<< s[i].time << " "
+				<< s[i].address << " "
+				<< s[i].teacher << endl;break;}}
+	s[i].num=f;
+ssave("student.txt",i);
+cout<< endl << "\t 是否继续选课（Y/N):";
+	string s; cin >> s;
+	if (s[0] == 'y' || s[0] == 'Y'){goto S;student_num++;}
+	else {menu1();student_num++;}
+}
+int ssave(string file,int i)   //保存课程信息  一个参数是文件，方便要写其他文件，
+{
+	ofstream outfile(file,ios::out|ios::app);           
+	if (!outfile) {                      //判断是否成功打开文件
+		cout << "文件打开失败！" << endl;
+		return 0;
+	}
+	outfile<<s[i].num<<"\t"<<s[i].bianhao<<"\t"<<s[i].name<<"\t"
+	<<s[i].week<<"\t"<<s[i].time<<"\t"<<s[i].address<<"\t"<<s[i].teacher<<endl;
+	 outfile.close();
+	return 1;
+}
+
+void student::exit()       //退选
+{
+	int a;
+	student x;
+	x.display();
+	cout<<"\t请输入要退选的课程编号：";   //课程删除类似
+	cin>>a;
+	student_num = 0;
+	student_num = CountLines("student.txt");
+	ifstream in("student.txt");
+	for (int i = 0; i < student_num; i++) {
+		in >>s[i].num>> s[i].bianhao >> s[i].name
+			>> s[i].week >> s[i].time
+			>> s[i].address >> s[i].teacher;
+	}
+	in.close();
+	for (int i = 0; i < student_num; i++) {
+		if (s[i].bianhao == a) {
+			cout << "\t课程编号 " << a<< " 信息如下：\n";
+			cout << s[i].num << " "
+				<<s[i].bianhao<<" "
+				<< s[i].name << " "
+				<< s[i].week << " "
+				<< s[i].time << " "
+				<< s[i].address << " "
+				<< s[i].teacher << endl;
+			cout << "\t是否退选该选课(Y/N):" << endl;
+			string c;
+			cin >> c;
+			if (c[0] == 'y' || c[0] == 'Y') {
+				if (i != student_num - 1) {
+					for (int j = i; j < student_num; j++) {
+						s[j] = s[j + 1];
+					}
+				}
+				student_num--;
+				ofstream on("student.txt");
+				for (int k = 0; k < student_num; k++) {
+					on << s[k].num << "\t" 
+						<<s[k].bianhao<<"\t"
+						<< s[k].name << "\t" 
+						<< s[k].week << "\t"
+						<< s[k].time << "\t" 
+						<< s[k].address << "\t" 
+						<< s[k].teacher << endl;
+				}
+				on.close();
+				cout << "\t\t退选成功!" << endl;
+				system("pause");
+				system("cls");
+				menu1();
+			}
+			else { system("cls"); menu2(); }
+		}
+		cout << "\t\t无此课程！"<<endl;
+		system("pause");
+		menu1();
+	}
+}
+
+void student::display()    //查看已选课程
+{int i,a;int student_num ;
+ student_num= CountLines("student.txt");
+ cout<<"\t请输入你的学号:";
+ cin>>a;
+ cout <<"\t***************** 全部课程信息 *****************\t"<<endl;;
+  ifstream infile("student.txt",ios::in);
+  if (!infile) 
+    {
+		cout << "读取数据失败！" << endl;
+    }
+  for(i=0;i<student_num;i++)
+  {
+	  infile>>s[i].num>>s[i].bianhao>>s[i].name>>s[i].week>>
+		 s[i].time>>s[i].address>>s[i].teacher;
+   }
+  infile.close();
+ for(i=0;i<student_num;i++)
+ {if(s[i].num==a)
+ {cout<<s[i].num<<"\t"<<s[i].bianhao<<"\t"<<s[i].name<<"\t"<<s[i].week<<"\t"
+		 <<s[i].time<<"\t"<<s[i].address<<"\t"<<s[i].teacher<<endl;}
+  }
+ system("pause");
+ menu1();
+}
+
+void menu1()   //学生登录菜单
+{
+  int b;
+  student s;
+    cout<<endl;
+    cout<<"\t\t//************************************************//"<<endl;
+    cout<<"\t\t//                欢迎学生来到选课系统            //"<<endl;
+    cout<<"\t\t//************************************************//"<<endl;
+    cout<<"\t\t//                  1.选择课程                    //"<<endl;
+    cout<<"\t\t//                  2.退选课程                    //"<<endl;
+    cout<<"\t\t//                  3.查看选课                    //"<<endl;
+    cout<<"\t\t//                 按任意键退出                   //"<<endl;
+    cout<<"\t\t//              (请选择编号进行操作)              //"<<endl;
+  cin>>b;
+ switch(b)
+{
+ case 1:
+	 s.select();
+	 break;
+ case 2:
+	 s.exit();
+	 break;
+ case 3:
+	 s.display();
+	 break;
+ default:
+	 break;
+ }
+}
+void menu2()   //管理员登录菜单
+{
+  int b;
+  course c;
+    cout<<endl;
+    cout<<"\t\t//************************************************//"<<endl;
+    cout<<"\t\t//              欢迎管理员来到选课系统            //"<<endl;
+    cout<<"\t\t//************************************************//"<<endl;
+    cout<<"\t\t//                  1.添加课程                    //"<<endl;
+    cout<<"\t\t//                  2.删除课程                    //"<<endl;
+    cout<<"\t\t//                  3.查看课程                    //"<<endl;
+    cout<<"\t\t//                  4.修改课程                    //"<<endl;
+    cout<<"\t\t//                 按任意键退出                   //"<<endl;
+    cout<<"\t\t//              (请选择编号进行操作)              //"<<endl;
+  cin>>b;
+ switch(b)
+{
+ case 1:
+	 c.addcourse();
+	 break;
+ case 2:
+	 c.canclecourse();
+	 break;
+ case 3:
+	 c.displaycourse();
+	 break;
+ case 4:
+     c.changecourse();
+ default:
+	 break;
+ }
+}
+
+
+int main()
+{
+ Window();
+ return 0;
+}
+void course::addcourse()
+{ 
+A:system("cls");
+	cout << "\t\t ********** 课程信息 **********" << endl << endl;
+	cout << "\t\t\t请输入课程编号：";
+	cin >> c[course_num].number;
+	cout << "\t\t\t请输入课程名称：";
+	cin >> c[course_num].name;
+	cout << "\t\t\t请输入课程周数：";
+	cin >> c[course_num].week;
+	cout << "\t\t\t请输入课程时间：";
+	cin >> c[course_num].time;
+	cout << "\t\t\t请输入课程地点：";
+	cin >> c[course_num].address;
+	cout << "\t\t\t请输入课程老师：";
+	cin >> c[course_num].teacher;
+	save("course.txt");
+	cout << endl << "\t 是否继续添加（Y/N):";
+	string s; cin >> s;
+	if (s[0] == 'y' || s[0] == 'Y'){goto A;course_num++;}
+	else {menu2();course_num++;}
+}
+int save(string file)   //保存课程信息  一个参数是文件，方便要写其他文件，
+{
+	ofstream outfile(file,ios::out|ios::app);           
+	if (!outfile) {                      //判断是否成功打开文件
+		cout << "文件打开失败！" << endl;
+		return 0;
+	}
+	outfile<<c[course_num].number<<"\t"<<c[course_num].name<<"\t"<<c[course_num].week<<"\t"
+		<<c[course_num].time<<"\t"<<c[course_num].address<<"\t"<<c[course_num].teacher<<endl;
+	 outfile.close();
+	return 1;
+}
+int CountLines(string filename)//获取文件行数
+{
+    ifstream ReadFile;
+    int n=0;
+    string tmp;
+    ReadFile.open(filename,ios::in);//ios::in 表示以只读的方式读取文件
+    if(ReadFile.fail())//文件打开失败:返回0
+    {
+        return 0;
+    }
+    else//文件存在
+    {
+        while(getline(ReadFile,tmp,'\n'))
+        {
+            n++;
+        }
+        ReadFile.close();
+        return n;
+    }
+}
+void course::displaycourse()
+{int i;int course_num ;
+ course_num= CountLines("course.txt");
+ cout <<"\t\t****************** 全部课程信息 ******************\t\t"<<endl;;
+  ifstream infile("course.txt",ios::in);
+  if (!infile) 
+    {
+		cout << "读取数据失败！" << endl;
+    }
+  for(i=0;i<course_num;i++)
+  {
+      infile>>c[i].number>>c[i].name>>c[i].week>>
+		 c[i].time>>c[i].address>>c[i].teacher;
+       cout<<c[i].number<<"\t"<<c[i].name<<"\t"<<c[i].week<<"\t"
+		 <<c[i].time<<"\t"<<c[i].address<<"\t"<<c[i].teacher<<endl;
+   }
+   infile.close();
+ system("pause");
+ menu2();
+}
+void course::canclecourse() //删除课程信息
+{
+	int linenum = 0;
+	cout << "\n请输入要删除的课程编号:" << endl;
+	cin >> linenum;
+	course_num = 0;
+	course_num = CountLines("course.txt");
+	ifstream in("course.txt");
+	for (int i = 0; i < course_num; i++) {
+		in >> c[i].number >> c[i].name
+			>> c[i].week >> c[i].time
+			>> c[i].address >> c[i].teacher;
+	}
+	in.close();
+	for (int i = 0; i < course_num; i++) {
+		if (c[i].number == linenum) {
+			cout << "课程编号 " << linenum << " 信息如下：\n";
+			cout << c[i].number << " "
+				<< c[i].name << " "
+				<< c[i].week << " "
+				<< c[i].time << " "
+				<< c[i].address << " "
+				<< c[i].teacher << endl;
+			cout << "是否删除该行(Y/N):" << endl;
+			string s;
+			cin >> s;
+			if (s[0] == 'y' || s[0] == 'Y') {
+				if (i != course_num - 1) {
+					for (int j = i; j < course_num; j++) {
+						c[j] = c[j + 1];
+					}
+				}
+				course_num--;
+				ofstream on("course.txt");
+				for (int k = 0; k < course_num; k++) {
+					on << c[k].number << "\t" 
+						<< c[k].name << "\t" 
+						<< c[k].week << "\t"
+						<< c[k].time << "\t" 
+						<< c[k].address << "\t" 
+						<< c[k].teacher << endl;
+				}
+				on.close();
+				cout << "删除成功" << endl;
+				system("pause");
+				system("cls");
+				menu2();
+			}
+			else { system("cls"); menu2(); }
+		}
+		cout << "无此课程！"<<endl;
+		system("pause");
+		menu2();
+	}
+}
+
+void course::changecourse() {
+	int linenum = 0;
+	cout << "\n请输入要修改的课程编号: ";
+	cin >> linenum;
+	course_num = 0;
+	course_num = CountLines("course.txt");
+	ifstream in("course.txt");
+	for (int i = 0; i < course_num; i++) {
+		in >> c[i].number >> c[i].name
+			>> c[i].week >> c[i].time
+			>> c[i].address >> c[i].teacher;
+	}
+	in.close();
+	for (int i = 0; i < course_num; i++) {
+		if (c[i].number == linenum) {
+			cout << "课程编号 " << linenum << " 信息如下：\n";
+			cout << c[i].number << " "
+				<< c[i].name << " "
+				<< c[i].week << " "
+				<< c[i].time << " "
+				<< c[i].address << " "
+				<< c[i].teacher << endl;
+			cout << "是否修改(Y/N):" << endl;
+			string s;
+			cin >> s;
+			if (s[0] == 'y' || s[0] == 'Y') {
+				cout << "请选择修改的内容：1，课程编号 2，课程名称 3，课程周数 4，课程时间 5，课程地点 6,课程老师" << endl;
+				cout << "请输入相应的功能选项：";
+				int choice;
+				cin >> choice;
+				switch (choice)
+				{
+				case 1:cout << "请输入新的课程编号："; cin >> c[i].number; break;
+				case 2:cout << "请输入新的课程名称："; cin >> c[i].name; break;
+				case 3:cout << "请输入新的课程周数："; cin >> c[i].week; break;
+				case 4:cout << "请输入新的课程时间："; cin >> c[i].time; break;
+				case 5:cout << "请输入新的课程地点："; cin >> c[i].address; break; 
+				case 6:cout << "请输入新的课程老师："; cin >> c[i].teacher; break;
+				default:
+					break;
+				}
+				ofstream on("course.txt");
+				for (int k = 0; k < course_num; k++) {
+					on << c[k].number << "\t"
+						<< c[k].name << "\t"
+						<< c[k].week << "\t"
+						<< c[k].time << "\t"
+						<< c[k].address << "\t"
+						<< c[k].teacher << endl;
+				}
+				on.close();
+				cout << "\n修改成功" << endl;
+				system("pause");
+				system("cls");
+				menu2();
+			}
+			else { system("cls"); menu2(); }
+		}
+		cout << "无此课程！" << endl;
+		system("pause");
+		menu2();
+	}
+}
+void course::Displaycourse()
+{int i;int course_num ;
+ course_num= CountLines("course.txt");
+ cout <<"\t\t********** 全部课程信息 **********\t\t"<<endl;;
+  ifstream infile("course.txt",ios::in);
+  if (!infile) 
+    {
+		cout << "读取数据失败！" << endl;
+    }
+  for(i=0;i<course_num;i++)
+  {
+      infile>>c[i].number>>c[i].name>>c[i].week>>
+		 c[i].time>>c[i].address>>c[i].teacher;
+       cout<<c[i].number<<"\t"<<c[i].name<<"\t"<<c[i].week<<"\t"
+		 <<c[i].time<<"\t"<<c[i].address<<"\t"<<c[i].teacher<<endl;
+   }
+   infile.close();}
